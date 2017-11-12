@@ -2,9 +2,9 @@
 layout: post
 categorise: java hibernate
 tag: java hibernate
+title: Hibernate 项目执行过程中没有输出需要执行的 sql 日志
+date: 2017-11-12 19:50:39
 ---
-# Hibernate 项目执行过程中没有输出需要执行的 *sql* 日志
-
 ##### 因为没有执行 *sql* 导致 *dao* 返回了数据为空 引起下面代码报空指针异常
 
 ##### 主要原因是 *hibernate* 没有扫到对应的实体类包
