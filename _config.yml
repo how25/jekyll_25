@@ -24,6 +24,7 @@ baseurl: "/jekyll_25" # the subpath of your site, e.g. /blog
 # twitter_username: jekyllrb
 github_username: how25 
 # Build settings
+permalink: /blog/:title
 markdown: kramdown
 theme: minima
 plugins:
