@@ -99,4 +99,76 @@ class Cache<K,V> {
 }
 ```
 
- 
+# StampedLock
+不可重入
+java1.8 读多写死场景, 性能比读写锁好 
+StampedLock 支持三种模式, 写锁/ 悲观读锁和乐观读锁
+写锁与悲观读锁互斥. 写锁和悲观读锁加锁成功之后, 都会返回一个stamp; 解锁的时候需要传入这个stamp
+
+```java
+final StampedLock sl = 
+  new StampedLock();
+  
+// 获取 / 释放悲观读锁示意代码
+long stamp = sl.readLock();
+try {
+  // 省略业务相关代码
+} finally {
+  sl.unlockRead(stamp);
+}
+
+// 获取 / 释放写锁示意代码
+long stamp = sl.writeLock();
+try {
+  // 省略业务相关代码
+} finally {
+  sl.unlockWrite(stamp);
+}
+
+```
+StampedLock 的性能之所以比 ReadWriteLock 还要好, 其关键是 StampedLock 支持乐观读的方式, 其允许一个线程获取写锁, 也就是说不是所有写操作都被阻塞.
+
+## 读模板
+```java
+final StampedLock sl = 
+  new StampedLock();
+
+// 乐观读
+long stamp = 
+  sl.tryOptimisticRead();
+// 读入方法局部变量
+......
+// 校验 stamp
+if (!sl.validate(stamp)){
+  // 升级为悲观读锁
+  stamp = sl.readLock();
+  try {
+    // 读入方法局部变量
+    .....
+  } finally {
+    // 释放悲观读锁
+    sl.unlockRead(stamp);
+  }
+}
+// 使用方法局部变量执行业务操作
+......
+```
+
+## 写模板
+```java
+long stamp = sl.writeLock();
+try {
+  // 写共享变量
+  ......
+} finally {
+  sl.unlockWrite(stamp);
+}
+
+```
+
+# CountDownLatch和CyclicBarrier
+CountDownLatch 有个计数器, 可实现主线程等待 N 个线程执行完再执行
+CyclicBarrier 可以实现线程同步, 可以实现一组线程互相等待
+
+
+
